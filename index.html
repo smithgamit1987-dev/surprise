@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Special Day 🌹</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Envelope open animation */
+    .envelope-container {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg-deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.8s, visibility 0.8s;
+    }
+    .envelope-container.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .envelope {
+      font-size: 6rem;
+      cursor: pointer;
+      animation: envelopePulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 25px rgba(255,45,110,0.6));
+      transition: transform 0.3s;
+      user-select: none;
+    }
+    .envelope:hover { transform: scale(1.12) rotate(-5deg); }
+    .envelope:active { transform: scale(0.95); }
+
+    @keyframes envelopePulse {
+      0%,100% { filter: drop-shadow(0 0 20px rgba(255,45,110,0.4)); }
+      50%      { filter: drop-shadow(0 0 45px rgba(255,45,110,0.8)); }
+    }
+
+    .tap-hint {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      animation: blink 1.5s step-end infinite;
+    }
+    .envelope-label {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--rose-light);
+      text-shadow: var(--glow-sm);
+    }
+
+    /* Main content hidden initially */
+    .main-reveal { opacity: 0; transition: opacity 1s ease; }
+    .main-reveal.visible { opacity: 1; }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 50%; transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      z-index: 10;
+      animation: fadeUp 1s 2s both;
+    }
+    .scroll-cue .chevron {
+      font-size: 1rem;
+      animation: bounce 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+  </style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  ENVELOPE SPLASH SCREEN      ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="envelope-container" id="splash">
+  <div class="envelope-label fade-up">You have a special letter…</div>
+  <div class="envelope" id="envelopeBtn" title="Open it">💌</div>
+  <div class="tap-hint">tap to open</div>
+</div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  PARTICLE CANVAS             ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  FLOATING HEARTS             ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="hearts-container" id="heartsContainer"></div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  ORB BACKGROUNDS             ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  MUSIC TOGGLE                ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<button id="musicToggle" title="Toggle music">🎵</button>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  SECRET HEART                ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="secretHeart" title="Psst… click me">🤍</div>
+<div class="secret-popup" id="secretPopup">
+  ✨ You found the secret!<br><br>
+  "Some people make the world more beautiful just by being in it. You're one of them." 🌸
+</div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║  MAIN CONTENT                ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="page-wrapper">
+  <div class="main-reveal" id="mainReveal">
+    <div class="index-hero content fade-in">
+
+      <span class="intro-label fade-up">✦ A very special message awaits ✦</span>
+
+      <div class="main-title fade-up-delay-1">Happy Birthday</div>
+      <div class="sub-name fade-up-delay-2">YOUR_NAME</div>
+
+      <p class="index-tagline fade-up-delay-3">Today the universe pauses — just for you</p>
+
+      <!-- Countdown (to midnight tonight) -->
+      <div class="countdown-wrapper fade-up-delay-3" id="countdownWrapper">
+        <div class="countdown-block">
+          <span class="countdown-num" id="cd-h">00</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-block">
+          <span class="countdown-num" id="cd-m">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-block">
+          <span class="countdown-num" id="cd-s">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+        <div class="countdown-block">
+          <span class="countdown-num" id="cd-label" style="font-size:0.8rem;letter-spacing:0.02em;padding-top:0.4rem">left in<br>your day</span>
+          <span class="countdown-label">&nbsp;</span>
+        </div>
+      </div>
+
+      <div class="glow-divider fade-up-delay-4"></div>
+
+      <p class="body-text fade-up-delay-4" style="margin-bottom:2rem">
+        Someone put a lot of love into this page — just for you.<br>
+        Take a breath, play the music, and let it begin. 🌹
+      </p>
+
+      <div class="fade-up-delay-5">
+        <a href="page1.html" class="btn btn-primary" id="startBtn">
+          Begin the Journey &nbsp;→
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="scroll-cue">
+      <span>scroll or click</span>
+      <span class="chevron">↓</span>
+    </div>
+  </div>
+</div>
+
+<!-- Nav dots -->
+<nav class="nav-dots">
+  <a href="index.png" class="nav-dot active" title="Intro"></a>
+  <a href="page1.html" class="nav-dot" title="Message"></a>
+  <a href="page3.html" class="nav-dot" title="Gallery"></a>
+  <a href="page4.html" class="nav-dot" title="Surprise"></a>
+</nav>
+
+<!-- Audio -->
+<audio id="bgMusic" loop preload="none">
+  <!-- Replace src with your own romantic music URL or base64 -->
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5d4e1c89e4.mp3?filename=romantic-piano-ambient-110624.mp3" type="audio/mpeg" />
+</audio>
+
+<script>
+/* ── Envelope open ── */
+const splash      = document.getElementById('splash');
+const mainReveal  = document.getElementById('mainReveal');
+const envelopeBtn = document.getElementById('envelopeBtn');
+
+envelopeBtn.addEventListener('click', () => {
+  envelopeBtn.textContent = '💌';
+  envelopeBtn.style.animation = 'none';
+  envelopeBtn.style.transform = 'scale(1.3) rotate(10deg)';
+  envelopeBtn.style.filter = 'drop-shadow(0 0 60px rgba(255,45,110,1))';
+
+  setTimeout(() => {
+    splash.classList.add('hidden');
+    mainReveal.classList.add('visible');
+    startHearts();
+    tryAutoMusic();
+  }, 600);
+});
+
+/* ── Particle canvas ── */
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function Particle() {
+  this.reset = function() {
+    this.x     = Math.random() * W;
+    this.y     = Math.random() * H;
+    this.r     = Math.random() * 1.5 + 0.3;
+    this.speed = Math.random() * 0.3 + 0.08;
+    this.angle = Math.random() * Math.PI * 2;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.5
+      ? `rgba(255,107,157,${this.alpha})`
+      : `rgba(255,204,112,${this.alpha})`;
+  };
+  this.reset();
+}
+
+function initParticles() {
+  particles = [];
+  const count = Math.min(160, Math.floor(W * H / 6000));
+  for (let i = 0; i < count; i++) particles.push(new Particle());
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.angle += 0.005;
+    p.x += Math.cos(p.angle) * p.speed * 0.6;
+    p.y -= p.speed;
+    if (p.y < -5) { p.reset(); p.y = H + 5; }
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawParticles);
+}
+
+resize(); initParticles(); drawParticles();
+window.addEventListener('resize', () => { resize(); initParticles(); });
+
+/* ── Floating Hearts ── */
+const heartsEl  = document.getElementById('heartsContainer');
+const heartSyms = ['❤️','🌸','✨','💕','🌹','💗','⭐'];
+let heartsRunning = false;
+
+function startHearts() {
+  if (heartsRunning) return;
+  heartsRunning = true;
+  (function spawn() {
+    const h = document.createElement('span');
+    h.className = 'heart';
+    h.textContent = heartSyms[Math.floor(Math.random() * heartSyms.length)];
+    const left = Math.random() * 100;
+    const dur  = Math.random() * 8 + 8;
+    const size = Math.random() * 0.8 + 0.7;
+    h.style.cssText = `left:${left}%;font-size:${size}rem;animation-duration:${dur}s;animation-delay:0s`;
+    heartsEl.appendChild(h);
+    h.addEventListener('animationend', () => h.remove());
+    setTimeout(spawn, Math.random() * 1200 + 500);
+  })();
+}
+
+/* ── Countdown ── */
+function updateCountdown() {
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(23, 59, 59, 999);
+  const diff = midnight - now;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
+  document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
+  document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ── Music ── */
+const music   = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicToggle');
+let playing = false;
+
+function tryAutoMusic() {
+  music.volume = 0.3;
+  music.play().then(() => { playing = true; musicBtn.textContent = '🔊'; musicBtn.classList.add('playing'); }).catch(() => {});
+}
+
+musicBtn.addEventListener('click', () => {
+  if (playing) {
+    music.pause(); playing = false;
+    musicBtn.textContent = '🎵'; musicBtn.classList.remove('playing');
+  } else {
+    music.play(); playing = true;
+    musicBtn.textContent = '🔊'; musicBtn.classList.add('playing');
+  }
+});
+
+/* ── Secret Heart ── */
+const secretHeart  = document.getElementById('secretHeart');
+const secretPopup  = document.getElementById('secretPopup');
+let secretVisible  = false;
+let clickCount = 0;
+
+secretHeart.addEventListener('click', () => {
+  clickCount++;
+  secretVisible = !secretVisible;
+  secretPopup.classList.toggle('visible', secretVisible);
+  secretHeart.textContent = secretVisible ? '❤️' : '🤍';
+  if (clickCount === 3) secretHeart.style.animation = 'glowPulse 1s infinite';
+});
+
+/* ── Navigate with transition ── */
+document.querySelectorAll('a[href]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http')) return;
+    e.preventDefault();
+    document.body.style.transition = 'opacity 0.5s';
+    document.body.style.opacity = '0';
+    setTimeout(() => { window.location.href = href; }, 500);
+  });
+});
+</script>
+</body>
+</html>

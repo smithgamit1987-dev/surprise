@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Message for You 💬</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+    :root {
+      --rose: #ff2d6e;
+      --rose-light: #ff6b9d;
+      --gold: #ffcc70;
+      --rose-glow: rgba(255, 45, 110, 0.4);
+      --font-handwritten: 'Dancing Script', cursive;
+    }
+
+    /* Celebration Particle Style */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--rose);
+      pointer-events: none;
+      z-index: 1000;
+      border-radius: 2px;
+    }
+
+    .page1-layout {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem 6rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .letter-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .letter-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      cursor: pointer; /* Makes it look clickable */
+      user-select: none;
+      animation: iconFloat 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(255,45,110,0.6));
+      transition: transform 0.2s ease;
+    }
+    .letter-icon:active { transform: scale(0.9); }
+
+    @keyframes iconFloat { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-10px) rotate(3deg)} }
+
+    .progress-wrap {
+      width: 100%;
+      max-width: 400px;
+      height: 3px;
+      background: rgba(255,107,157,0.12);
+      border-radius: 3px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose), var(--gold));
+      border-radius: 3px;
+      width: 0%;
+      box-shadow: 0 0 10px var(--rose-glow);
+      transition: width 0.4s ease;
+    }
+
+    .typing-box { 
+      min-height: 320px; 
+      font-family: var(--font-handwritten);
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+      line-height: 1.6;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    
+    .typing-box .line { display: block; margin-bottom: 0.5rem; }
+
+    .after-message {
+      margin-top: 2.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+    .after-message.show { opacity: 1; transform: translateY(0); }
+
+    .quote-block {
+      border-left: 2px solid var(--rose);
+      padding: 0.8rem 1.2rem;
+      margin: 1.5rem 0;
+      background: rgba(255,45,110,0.04);
+      border-radius: 0 10px 10px 0;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--rose-light);
+    }
+
+    .nav-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .cursor {
+      border-left: 2px solid var(--gold);
+      margin-left: 5px;
+      animation: blink 0.7s infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="hearts-container" id="heartsContainer"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<button id="musicToggle" title="Toggle music">🎵</button>
+<div id="secretHeart" title="Psst… click me">🤍</div>
+<div class="secret-popup" id="secretPopup">
+  💌 Secret unlocked!<br><br>
+  "Every year you exist makes this world a warmer place. Happy Birthday." 🌙
+</div>
+
+<div class="page1-layout fade-in">
+  <div class="letter-header">
+    <div class="letter-icon" id="mainLetter">📖</div>
+    <span class="intro-label">A letter — written just for you</span>
+    <h1 class="serif-title" style="font-size:clamp(1.6rem,5vw,2.8rem)">
+      Dear <span class="rose-text">YOUR_NAME</span>,
+    </h1>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="glass-card typing-box" id="typingBox">
+    <p id="typingText"></p>
+    <span class="cursor" id="cursor"></span>
+  </div>
+
+  <div class="after-message" id="afterMessage">
+    <div class="quote-block">
+      "You don't just celebrate a birthday — you celebrate a life that makes others feel seen, loved, and grateful." 🌹
+    </div>
+    <div class="typing-signature" style="font-family: var(--font-handwritten); font-size: 1.4rem;">— Someone who means it</div>
+    <div class="nav-btns">
+      <a href="index.html" class="btn btn-ghost">← Back</a>
+      <a href="page3.html" class="btn btn-primary">Next — Why you're special →</a>
+    </div>
+  </div>
+</div>
+
+<nav class="nav-dots">
+  <a href="index.html" class="nav-dot" title="Intro"></a>
+  <a href="page1.html" class="nav-dot active" title="Message"></a>
+  <a href="page3.html" class="nav-dot" title="Gallery"></a>
+  <a href="page4.html" class="nav-dot" title="Surprise"></a>
+</nav>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+</audio>
+
+<script>
+/* ── Particle canvas ── */
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function Particle() {
+  this.reset = function() {
+    this.x = Math.random() * W; this.y = Math.random() * H;
+    this.r = Math.random() * 1.2 + 0.3; this.speed = Math.random() * 0.25 + 0.06;
+    this.angle = Math.random() * Math.PI * 2; this.alpha = Math.random() * 0.4 + 0.1;
+    this.color = Math.random() > 0.5 ? `rgba(255,107,157,${this.alpha})` : `rgba(255,204,112,${this.alpha})`;
+  };
+  this.reset();
+}
+function initP() { particles = []; const n = Math.min(120, Math.floor(W*H/7000)); for(let i=0;i<n;i++) particles.push(new Particle()); }
+function draw() {
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p => {
+    p.angle += 0.005; p.x += Math.cos(p.angle) * p.speed * 0.6; p.y -= p.speed;
+    if(p.y < -5) { p.reset(); p.y = H+5; }
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+resize(); initP(); draw();
+window.addEventListener('resize', () => { resize(); initP(); });
+
+/* ── Floating Hearts ── */
+const heartsEl = document.getElementById('heartsContainer');
+const heartSyms = ['❤️','🌸','✨','💕','🌹','💗','⭐'];
+(function spawnHeart() {
+  const h = document.createElement('span');
+  h.className = 'heart';
+  h.textContent = heartSyms[Math.floor(Math.random() * heartSyms.length)];
+  const left = Math.random() * 100;
+  const dur  = Math.random() * 8 + 8;
+  const size = Math.random() * 0.7 + 0.6;
+  h.style.cssText = `left:${left}%;font-size:${size}rem;animation-duration:${dur}s`;
+  if(heartsEl) heartsEl.appendChild(h);
+  h.addEventListener('animationend', () => h.remove());
+  setTimeout(spawnHeart, Math.random() * 1400 + 600);
+})();
+
+/* ── SECRET BLAST LOGIC (3 Taps) ── */
+let clickCount = 0;
+let clickTimer;
+const mainLetter = document.getElementById('mainLetter');
+
+mainLetter.addEventListener('click', (e) => {
+  clickCount++;
+  clearTimeout(clickTimer);
+  
+  // Reset count if user stops clicking for 1 second
+  clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+
+  if (clickCount === 3) {
+    createBlast(e.clientX, e.clientY);
+    clickCount = 0; // Reset
+  }
+});
+
+function createBlast(x, y) {
+  const colors = ['#ff2d6e', '#ffcc70', '#ffffff', '#ff6b9d'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti';
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    
+    document.body.appendChild(p);
+    
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = 4 + Math.random() * 6;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+    
+    let opacity = 1;
+    let posX = x;
+    let posY = y;
+
+    const animate = () => {
+      posX += vx;
+      posY += vy;
+      opacity -= 0.02;
+      p.style.left = posX + 'px';
+      p.style.top = posY + 'px';
+      p.style.opacity = opacity;
+      p.style.transform = `rotate(${posX}deg)`;
+
+      if (opacity > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        p.remove();
+      }
+    };
+    requestAnimationFrame(animate);
+  }
+}
+
+/* ── Typing animation ── */
+const message = [
+  "Happy Birthday!",
+  "May your day be as bright and beautiful",
+  "as the light you bring into the lives",
+  "of everyone around you.",
+  "",
+  "I hope this year ahead is filled",
+  "with endless laughter, new adventures,",
+  "and all the happiness you truly deserve.",
+  "",
+  "Cheers to another wonderful year of you!"
+];
+
+const el       = document.getElementById('typingText');
+const cursor   = document.getElementById('cursor');
+const prog     = document.getElementById('progressBar');
+const afterMsg = document.getElementById('afterMessage');
+
+function renderLines() {
+  el.innerHTML = '';
+  message.forEach((line, idx) => {
+    const span = document.createElement('span');
+    span.className = 'line';
+    span.id = `line-${idx}`;
+    span.style.opacity = '0';
+    if (line === '') span.innerHTML = '&nbsp;';
+    el.appendChild(span);
+  });
+}
+renderLines();
+
+let lineIdx = 0;
+let charInLine = 0;
+
+function typeNext() {
+  if (lineIdx >= message.length) {
+    cursor.style.display = 'none';
+    afterMsg.classList.add('show');
+    return;
+  }
+  const line = message[lineIdx];
+  const span = document.getElementById(`line-${lineIdx}`);
+  span.style.opacity = '1';
+  if (line === '') {
+    lineIdx++; charInLine = 0;
+    setTimeout(typeNext, 200);
+    return;
+  }
+  if (charInLine < line.length) {
+    span.textContent = line.substring(0, charInLine + 1);
+    charInLine++;
+    prog.style.width = ((lineIdx + (charInLine / line.length)) / message.length) * 100 + '%';
+    setTimeout(typeNext, 40 + Math.random() * 30);
+  } else {
+    lineIdx++; charInLine = 0;
+    setTimeout(typeNext, 400);
+  }
+}
+setTimeout(typeNext, 1200);
+
+/* ── Music & Page Transitions (Standard) ── */
+const music = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicToggle');
+let playing = false;
+if (sessionStorage.getItem('musicPlaying') === 'true') {
+  music.volume = 0.3;
+  music.play().then(() => { playing = true; musicBtn.textContent = '🔊'; }).catch(()=>{});
+}
+musicBtn.addEventListener('click', () => {
+  if (playing) { music.pause(); playing = false; musicBtn.textContent = '🎵'; sessionStorage.setItem('musicPlaying','false'); }
+  else { music.play(); playing = true; musicBtn.textContent = '🔊'; sessionStorage.setItem('musicPlaying','true'); }
+});
+</script>
+</body>
+</html>

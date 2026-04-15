@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday! 🎂✨</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page4-layout {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem 6rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Firework burst on entry */
+    .burst-ring {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: transparent;
+      border: 3px solid var(--rose);
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+    }
+    .burst-ring.fire {
+      animation: burstOut 0.8s ease-out forwards;
+    }
+    @keyframes burstOut {
+      0%   { width:10px;height:10px;opacity:1; }
+      100% { width:600px;height:600px;opacity:0; }
+    }
+
+    /* Main card */
+    .birthday-main-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,204,112,0.2);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .birthday-main-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--rose), var(--gold), var(--rose-light), var(--gold));
+      background-size: 200%;
+      animation: gradientShift 3s ease infinite;
+    }
+    @keyframes gradientShift { 0%{background-position:0%} 100%{background-position:200%} }
+
+    .birthday-main-card::after {
+      content: '🌹';
+      position: absolute;
+      bottom: 1rem; right: 1.5rem;
+      font-size: 5rem;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    /* Age reveal */
+    .age-reveal-wrapper {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      margin: 0.5rem 0 1rem;
+    }
+    .age-hidden {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,45,110,0.1);
+      border: 1px dashed rgba(255,107,157,0.4);
+      border-radius: 10px;
+      padding: 0.3rem 1rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem,4vw,2rem);
+      color: var(--muted);
+      transition: all 0.4s;
+    }
+    .age-hidden:hover { border-color: var(--rose-light); color: var(--rose-light); box-shadow: var(--glow-sm); }
+    .age-hidden.revealed { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+
+    /* Floating balloons */
+    .balloon {
+      position: fixed;
+      bottom: -80px;
+      font-size: 2.5rem;
+      animation: balloonRise linear infinite;
+      pointer-events: none;
+      z-index: 5;
+      filter: drop-shadow(0 0 8px rgba(255,45,110,0.4));
+    }
+    @keyframes balloonRise {
+      0%   { transform: translateY(0) rotate(-5deg); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 0.6; }
+      100% { transform: translateY(-110vh) rotate(5deg); opacity: 0; }
+    }
+
+    /* Ring of hearts */
+    .ring-of-hearts {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 1rem auto;
+    }
+    .ring-heart {
+      position: absolute;
+      font-size: 1.3rem;
+      animation: ringRotate 6s linear infinite;
+      transform-origin: 80px 80px;
+      filter: drop-shadow(0 0 6px var(--rose));
+    }
+
+    /* Wish stars */
+    .wish-stars {
+      display: flex;
+      justify-content: center;
+      gap: 0.3rem;
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+      filter: drop-shadow(0 0 10px var(--gold));
+    }
+
+    /* Back-to-top / replay */
+    .replay-btn {
+      background: transparent;
+      border: 1px solid rgba(255,107,157,0.3);
+      border-radius: 50px;
+      padding: 0.5rem 1.5rem;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+    .replay-btn:hover { color: var(--rose-light); border-color: var(--rose-light); box-shadow: var(--glow-sm); }
+
+    /* Signature block */
+    .signature-block {
+      margin-top: 2rem;
+      text-align: right;
+      padding-right: 1rem;
+    }
+
+    /* Final CTA */
+    .nav-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+
+    /* Sparkle border */
+    @keyframes sparkleRotate {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .glow-ring {
+      position: absolute;
+      inset: -2px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--rose), transparent, var(--gold), transparent, var(--rose));
+      background-size: 200%;
+      animation: gradientShift 4s linear infinite;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Number cascade */
+    .num-cascade {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 15vw, 9rem);
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(255,107,157,0.3);
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+    .num-1 { top: 5%; left: -2%; font-size: clamp(3rem, 8vw, 6rem); opacity: 0.15; }
+    .num-2 { bottom: 10%; right: -2%; font-size: clamp(2rem, 6vw, 5rem); opacity: 0.1; }
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+<div class="hearts-container" id="heartsContainer"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="burst-ring" id="burstRing"></div>
+
+<button id="musicToggle" title="Toggle music">🎵</button>
+<div id="secretHeart" title="Your final secret…">🤍</div>
+<div class="secret-popup" id="secretPopup">
+  🎂 You found them all!<br><br>
+  "May every wish you make today come true. You deserve every single one." 🌟✨
+</div>
+
+<!-- ─────────── PAGE 4 CONTENT ─────────── -->
+<div class="page4-layout">
+
+  <!-- Decorative numbers -->
+  <span class="num-cascade num-1">🎂</span>
+  <span class="num-cascade num-2">🌹</span>
+
+  <div class="final-wrapper">
+
+    <span class="cake-emoji fade-up">🎂</span>
+
+    <div class="final-main fade-up-delay-1">Happy Birthday</div>
+    <span class="final-name fade-up-delay-2">YOUR_NAME</span>
+
+    <div class="wish-stars fade-up-delay-2">⭐⭐⭐⭐⭐</div>
+
+    <!-- Ring of hearts -->
+    <div class="ring-of-hearts fade-up-delay-3" id="ringOfHearts"></div>
+
+    <!-- Main card -->
+    <div class="birthday-main-card fade-up-delay-3" style="position:relative">
+      <div class="glow-ring"></div>
+
+      <div class="wish-bubble">
+        <p class="wish-text">
+          Today isn't just another day —<br>
+          it's the anniversary of the moment<br>
+          this world got a little brighter.<br><br>
+          I hope this birthday brings you<br>
+          everything you've quietly wished for.<br>
+          Every dream, every laugh, every good thing<br>
+          you genuinely deserve — all of it.<br><br>
+          <span style="color:var(--rose-light)">Thank you for being exactly who you are.</span><br>
+          The world is undeniably better for it.
+        </p>
+      </div>
+
+      <div class="signature-block">
+        <div class="typing-signature">With love 🌹</div>
+        <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;margin-top:0.3rem">— Always</div>
+      </div>
+    </div>
+
+    <!-- Age reveal game -->
+    <div class="glass-card fade-up-delay-4" style="margin:1.5rem 0;padding:1.5rem;text-align:center">
+      <p style="font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:0.8rem">✦ A little secret ✦</p>
+      <p style="font-size:0.95rem;color:var(--white);margin-bottom:0.8rem">How special is today?</p>
+      <div class="age-reveal-wrapper" id="ageReveal">
+        <div class="age-hidden" id="ageBtn">
+          <span>🔒</span> <span>Tap to reveal</span>
+        </div>
+      </div>
+      <p class="body-text" id="ageText" style="display:none;margin-top:1rem;font-size:0.88rem">
+        You are <strong style="color:var(--gold)">exactly as old as you need to be</strong> — young enough to dream, wise enough to know what matters. 🌟
+      </p>
+    </div>
+
+    <!-- Confetti CTA -->
+    <div class="confetti-btn-wrapper fade-up-delay-5">
+      <button class="btn btn-primary" id="confettiBtn">
+        🎉 Celebrate!
+      </button>
+      <button class="btn btn-ghost" id="balloonBtn">
+        🎈 Send Balloons
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:1.2rem" class="fade-up-delay-5">
+      <button class="replay-btn" onclick="location.href='index.html'">↺ Relive from the start</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Nav dots -->
+<nav class="nav-dots">
+  <a href="index.html" class="nav-dot" title="Intro"></a>
+  <a href="page1.html" class="nav-dot" title="Message"></a>
+  <a href="page3.html" class="nav-dot" title="Gallery"></a>
+  <a href="page4.html" class="nav-dot active" title="Surprise"></a>
+</nav>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+</audio>
+
+<script>
+/* ── Canvas ── */
+const canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+function Particle(){this.reset=function(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.2+0.3;this.speed=Math.random()*0.25+0.06;this.angle=Math.random()*Math.PI*2;this.alpha=Math.random()*0.4+0.1;this.color=Math.random()>0.5?`rgba(255,107,157,${this.alpha})`:`rgba(255,204,112,${this.alpha})`;};this.reset();}
+function initP(){particles=[];const n=Math.min(120,Math.floor(W*H/7000));for(let i=0;i<n;i++)particles.push(new Particle());}
+function drawP(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.angle+=0.005;p.x+=Math.cos(p.angle)*p.speed*0.6;p.y-=p.speed;if(p.y<-5){p.reset();p.y=H+5;}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();});requestAnimationFrame(drawP);}
+resize();initP();drawP();window.addEventListener('resize',()=>{resize();initP();});
+
+/* ── Burst ring on load ── */
+setTimeout(() => {
+  const ring = document.getElementById('burstRing');
+  ring.classList.add('fire');
+}, 400);
+
+/* ── Hearts ── */
+const heartsEl=document.getElementById('heartsContainer');const heartSyms=['❤️','🌸','✨','💕','🌹','💗','⭐','🎉','🎈'];
+(function spawnHeart(){const h=document.createElement('span');h.className='heart';h.textContent=heartSyms[Math.floor(Math.random()*heartSyms.length)];const left=Math.random()*100;const dur=Math.random()*8+8;const size=Math.random()*0.9+0.7;h.style.cssText=`left:${left}%;font-size:${size}rem;animation-duration:${dur}s`;heartsEl.appendChild(h);h.addEventListener('animationend',()=>h.remove());setTimeout(spawnHeart,Math.random()*800+300);})();
+
+/* ── Ring of hearts ── */
+const ring = document.getElementById('ringOfHearts');
+const COUNT = 8;
+for (let i = 0; i < COUNT; i++) {
+  const h = document.createElement('span');
+  h.className = 'ring-heart';
+  h.textContent = ['❤️','💕','🌸','✨','💗','🌹','⭐','💫'][i % 8];
+  const angle = (i / COUNT) * Math.PI * 2;
+  const r = 65;
+  const x = 80 + r * Math.cos(angle) - 12;
+  const y = 80 + r * Math.sin(angle) - 12;
+  h.style.left = x + 'px';
+  h.style.top  = y + 'px';
+  h.style.animationDelay = (i * (6 / COUNT)) + 's';
+  h.style.animationDuration = (6 + i * 0.2) + 's';
+  ring.appendChild(h);
+}
+
+/* ── Confetti ── */
+const confettiCanvas = document.getElementById('confettiCanvas');
+const cc = confettiCanvas.getContext('2d');
+confettiCanvas.width  = window.innerWidth;
+confettiCanvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  confettiCanvas.width  = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+});
+
+let confettiPieces = [];
+let confettiRunning = false;
+
+function createConfetti(count) {
+  const colors = ['#ff2d6e','#ff6b9d','#ffcc70','#fff','#c084fc','#60a5fa','#34d399'];
+  for (let i = 0; i < count; i++) {
+    confettiPieces.push({
+      x: Math.random() * confettiCanvas.width,
+      y: -20,
+      w: Math.random() * 12 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: Math.random() * 3 + 2,
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.2,
+      opacity: 1,
+      decay: Math.random() * 0.01 + 0.004
+    });
+  }
+}
+
+function drawConfetti() {
+  if (!confettiRunning) return;
+  cc.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confettiPieces = confettiPieces.filter(p => p.opacity > 0.05);
+  confettiPieces.forEach(p => {
+    p.x    += p.vx;
+    p.y    += p.vy;
+    p.vy   += 0.05;
+    p.angle += p.spin;
+    p.opacity -= p.decay;
+    cc.save();
+    cc.globalAlpha = Math.max(0, p.opacity);
+    cc.translate(p.x, p.y);
+    cc.rotate(p.angle);
+    cc.fillStyle = p.color;
+    cc.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    cc.restore();
+  });
+  if (confettiPieces.length > 0) requestAnimationFrame(drawConfetti);
+  else { cc.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); confettiRunning=false; }
+}
+
+document.getElementById('confettiBtn').addEventListener('click', () => {
+  confettiRunning = true;
+  createConfetti(300);
+  // Multi-burst
+  setTimeout(() => createConfetti(200), 400);
+  setTimeout(() => createConfetti(150), 800);
+  drawConfetti();
+  // Auto-burst on load too
+});
+
+// Auto confetti on load
+setTimeout(() => {
+  confettiRunning = true;
+  createConfetti(250);
+  setTimeout(() => createConfetti(180), 600);
+  drawConfetti();
+}, 1200);
+
+/* ── Balloons ── */
+const balloonEmojis = ['🎈','🎁','🎊','🥳','🎉'];
+document.getElementById('balloonBtn').addEventListener('click', () => {
+  for (let i = 0; i < 12; i++) {
+    setTimeout(() => {
+      const b = document.createElement('span');
+      b.className = 'balloon';
+      b.textContent = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+      b.style.left = (Math.random() * 95) + 'vw';
+      b.style.animationDuration = (Math.random() * 5 + 6) + 's';
+      b.style.animationDelay = '0s';
+      b.style.fontSize = (Math.random() * 1.5 + 2) + 'rem';
+      document.body.appendChild(b);
+      b.addEventListener('animationend', () => b.remove());
+    }, i * 150);
+  }
+});
+
+/* ── Age reveal ── */
+document.getElementById('ageReveal').addEventListener('click', () => {
+  const btn  = document.getElementById('ageBtn');
+  const text = document.getElementById('ageText');
+  btn.innerHTML = '<span>🎂</span> <span>Perfectly You</span>';
+  btn.classList.add('revealed');
+  text.style.display = 'block';
+  text.style.animation = 'fadeUp 0.6s ease both';
+  // mini confetti burst
+  confettiRunning = true;
+  createConfetti(80);
+  drawConfetti();
+});
+
+/* ── Music ── */
+const music=document.getElementById('bgMusic'),musicBtn=document.getElementById('musicToggle');let playing=false;
+if(sessionStorage.getItem('musicPlaying')==='true'){music.volume=0.3;music.play().then(()=>{playing=true;musicBtn.textContent='🔊';musicBtn.classList.add('playing');}).catch(()=>{});}
+else {
+  // Try to autoplay on final page
+  music.volume=0.3;
+  music.play().then(()=>{playing=true;musicBtn.textContent='🔊';musicBtn.classList.add('playing');}).catch(()=>{});
+}
+musicBtn.addEventListener('click',()=>{if(playing){music.pause();playing=false;musicBtn.textContent='🎵';musicBtn.classList.remove('playing');}else{music.play();playing=true;musicBtn.textContent='🔊';musicBtn.classList.add('playing');}});
+
+/* ── Secret ── */
+const sh=document.getElementById('secretHeart'),sp=document.getElementById('secretPopup');let sv=false;
+sh.addEventListener('click',()=>{sv=!sv;sp.classList.toggle('visible',sv);sh.textContent=sv?'❤️':'🤍';if(sv){confettiRunning=true;createConfetti(100);drawConfetti();}});
+
+/* ── Transitions ── */
+document.querySelectorAll('a[href]').forEach(a=>{a.addEventListener('click',e=>{const href=a.getAttribute('href');if(!href||href.startsWith('#')||href.startsWith('http'))return;e.preventDefault();document.body.style.transition='opacity 0.5s';document.body.style.opacity='0';setTimeout(()=>{window.location.href=href;},500);});});
+</script>
+</body>
+</html>
